@@ -1,4 +1,4 @@
-stack = []
+stack = ["2", "1", "+", "3", "*"]
 help_massiv = []
 check = True
 for element_num in range(len(stack)):
