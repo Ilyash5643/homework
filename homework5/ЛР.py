@@ -32,7 +32,7 @@ avg_gpa = data_fame.groupby("Department")["GPA"].mean()
 print(f'средний gpa {avg_gpa}')
 print()
 kolvo_students = data_fame["Department"].value_counts()
-print(f'количество студентов {sort_age}')
+print(f'количество студентов {kolvo_students}')
 print()
 
 
