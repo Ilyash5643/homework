@@ -1,2 +1,3 @@
-a = [map(lambda x: for x in range(1, 11))]
-print(a)
+import random
+matrix = [[random.randint(0, 1) for i in range(6)] for i in range(4)]
+print(matrix)
