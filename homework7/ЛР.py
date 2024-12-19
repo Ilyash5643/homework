@@ -1,60 +1,65 @@
 class Polynomial:
     def __init__(self, coefficients):
-        self._coefficients = coefficients[::-1]
+        self._coefficients = coefficients
 
     @property
     def degree(self):
         return len(self._coefficients) - 1
 
     def __repr__(self):
-        terms = []
-        for i, coeff in enumerate(self._coefficients):
-            if coeff == 0:
+        term = []
+        for i, coef in enumerate(reversed(self._coefficients)):
+            if coef == 0:
                 continue
-            power = self.degree - i
-            term = f"{coeff}*x^{power}" if power != 0 else f"{coeff}"
-            terms.append(term)
-        return " + ".join(terms) if terms else "0"
+            pow = self.degree - i
+            if pow == 0:
+                term.append(f"{coef}")
+            elif pow == 1:
+                term.append(f"{coef}x")
+            else:
+                term.append(f"{coef}x^{pow}")
+        return " + ".join(term) if term else "0"
 
     def __call__(self, x):
         return self.evaluate(x)
 
     def __add__(self, other):
-        max_len = max(len(self._coefficients), len(other._coefficients))
-        result_coeffs = [0] * max_len
-        for i in range(max_len):
-            coeff1 = self._coefficients[i] if i < len(self._coefficients) else 0
-            coeff2 = other._coefficients[i] if i < len(other._coefficients) else 0
-            result_coeffs[i] = coeff1 + coeff2
-        return Polynomial(result_coeffs[::-1])
+        max_l = max(self.degree, other.degree) + 1
+        n_coef = [0] * max_l
+        for i in range(len(self._coefficients)):
+            n_coef[i] += self._coefficients[i]
+        for i in range(len(other._coefficients)):
+            n_coef[i] += other._coefficients[i]
+        return Polynomial(n_coef)
 
     def __sub__(self, other):
-        max_len = max(len(self._coefficients), len(other._coefficients))
-        result_coeffs = [0] * max_len
-        for i in range(max_len):
-            coeff1 = self._coefficients[i] if i < len(self._coefficients) else 0
-            coeff2 = other._coefficients[i] if i < len(other._coefficients) else 0
-            result_coeffs[i] = coeff1 - coeff2
-        return Polynomial(result_coeffs[::-1])
+        max_l = max(self.degree, other.degree) + 1
+        new_coef = [0] * max_l
+        for i in range(len(self._coefficients)):
+            new_coef[i] += self._coefficients[i]
+        for i in range(len(other._coefficients)):
+            new_coef[i] -= other._coefficients[i]
+        return Polynomial(new_coef)
 
     def __mul__(self, other):
-        result_coeffs = [0] * (len(self._coefficients) + len(other._coefficients) - 1)
-        for i, coeff1 in enumerate(self._coefficients):
-            for j, coeff2 in enumerate(other._coefficients):
-                result_coeffs[i + j] += coeff1 * coeff2
-        return Polynomial(result_coeffs[::-1])
+        new_coef = [0] * (self.degree + other.degree + 1)
+        for i in range(len(self._coefficients)):
+            for j in range(len(other._coefficients)):
+                new_coef[i + j] += self._coefficients[i] * other._coefficients[j]
+        return Polynomial(new_coef)
 
     def derivative(self):
         if self.degree == 0:
             return Polynomial([0])
-        deriv_coeffs = [self._coefficients[i] * (self.degree - i) for i in range(self.degree)]
-        return Polynomial(deriv_coeffs[::-1])
+        d_coef = [self._coefficients[i] * i for i in range(1, len(self._coefficients))]
+        return Polynomial(d_coef)
 
     def evaluate(self, x):
         result = 0
-        for coeff in self._coefficients:
-            result = result * x + coeff
+        for i, cf in enumerate(self._coefficients):
+            result += cf * (x ** i)
         return result
+
 
 class QuadraticPolynomial(Polynomial):
     def __init__(self, coefficients):
@@ -65,9 +70,23 @@ class QuadraticPolynomial(Polynomial):
         return b ** 2 - 4 * a * c
 
     def find_roots(self):
-        a, b, c = self._coefficients
+        c, b, a = self._coefficients
         disc = self.discriminant()
         root1 = (-b + disc ** 0.5) / (2 * a)
         root2 = (-b - disc ** 0.5) / (2 * a)
         return root1, root2
 
+
+# Пример использования
+p1 = Polynomial([1, 2, 3])
+p2 = Polynomial([0, -1, 1])
+quadraticpolynom = QuadraticPolynomial([1, -3, 2])
+print("P1:", p1) 
+print("P2:", p2) 
+print("P1 + P2:", p1 + p2)
+print("P1 - P2:", p1 - p2)  
+print("P1 * P2:", p1 * p2)  
+print("P1(2):", p1(2)) 
+print("P1 derivative:", p1.derivative())
+print('Discriminant:', test.discriminant())
+print('Roots:', test.find_roots())
